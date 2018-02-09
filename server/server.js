@@ -27,18 +27,51 @@ io.on('connection', (socket) => {
     // });
 
     socket.on('createMessage', (message) => {
-        console.log('new message', message)
+        console.log('new message', message);
+        // io.emit('newMessage',{
+        //     from: message.from,
+        //     text: message.text,
+        //     createAt: new Date().getTime()
+        // });
+        socket.broadcast.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createAt: new Date().getTime()
+        });
     });
 
     socket.on( 'disconnect' ,() => {
         console.log('user was disconnected');
     });
 
-   socket.emit('newMessage', {
-    from: 'prasoon',
-    text: 'hello prasoon',
-    createAt: 123
-   });
+//    socket.emit('newMessage', {
+//     from: 'prasoon',
+//     text: 'hello prasoon',
+//     createAt: 123
+//    });
+
+        socket.on('createAdmin', (Admin) => {
+        console.log('this is admin', Admin);
+
+        socket.broadcast.emit('userjoined', {
+            from: Admin.from,
+            text: Admin.text,
+            createAt: new Date().getTime()
+           });
+        });
+
+        socket.emit('newMessage', {
+            from: 'admin',
+            text: 'welcome to the chat app',
+            createAt: new Date().getTime()
+            
+        });
+
+        socket.broadcast.emit('joined', {
+            from: 'admin',
+            text: 'join new user',
+            createAt: new Date().getTime()
+        });
 });
  
 server.listen(port, () => {
