@@ -16,7 +16,9 @@ app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
     console.log('New user conncted');
+    socket.emit('newMessage', generatemessage('Admin', 'welcome to chat app'));
 
+    socket.broadcast.emit('newMessage', generatemessage('Admin', 'new user join!'));
     // socket.emit('newEmail', {
     //     from: 'example@gmail.com',
     //     text: 'hey whats going on.',
@@ -27,14 +29,12 @@ io.on('connection', (socket) => {
     //     console.log('create a new email', cEmail);
     // });
 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message,callback) => {
         console.log('new message', message);
-        // io.emit('newMessage',{
-        //     from: message.from,
-        //     text: message.text,
-        //     createAt: new Date().getTime()
-        // });
-        socket.broadcast.emit('newMessage', generatemessage(message.from, message.text));
+        io.emit('newMessage',generatemessage(message.from, message.text));
+        
+        //socket.broadcast.emit('newMessage', generatemessage(message.from, message.text));
+        callback();
     });
 
     socket.on( 'disconnect' ,() => {
@@ -47,19 +47,14 @@ io.on('connection', (socket) => {
 //     createAt: 123
 //    });
 
-        socket.on('createAdmin', (Admin) => {
+        socket.on('createAdmin',(Admin) => {
         console.log('this is admin', Admin);
 
         socket.broadcast.emit('userjoined', generatemessage(Admin.from, Admin.text));
         });
-
-        socket.emit('newMessage', generatemessage('Admin', 'welcome to chat app'));
-
-        socket.broadcast.emit('joined', generatemessage('Admin', 'new user join!'));
 });
  
 server.listen(port, () => {
-
  console.log(`server up to port ${port}`);
 
 });

@@ -23,14 +23,36 @@ var socket = io();
         });
 
         socket.on('newMessage', function (message) {
-            console.log('new message', message);
+            console.log('New-Message', message);
+            var li = jQuery('<li></li>');
+
+            li.text(`${message.from}: ${message.text}`);
+            jQuery('#message').append(li);
         });
 
-        socket.on('joined', function (join) {
-            console.log('join user', join);
-        });
+        // socket.on('joined', function (join) {
+        //     console.log('join user', join);
+        // });
 
         socket.on('userjoined', function (Admin) {
             console.log('user joined', Admin);
-            console.log('new user joined!');
+            
+        });
+
+        // socket.emit('createMessage',{
+        //     from: 'prasoon',
+        //     text: 'hello world'
+        // }, function () {
+        //     console.log('Acknowledgment from server:- Data is got it!');
+        // });
+
+        jQuery('#message-form').on('submit', function (event) {
+            event.preventDefault();
+
+            socket.emit('createMessage',{
+                from: 'prasoon',
+                text: jQuery('[name="message"]').val()
+            }, function () {
+
+            });
         });
