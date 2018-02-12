@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const {generatemessage} = require('./utils/message');
+const {generatemessage,generateLocationmessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 //console.log(publicPath);
@@ -37,6 +37,10 @@ io.on('connection', (socket) => {
         callback();
     });
 
+    socket.on('createLocationmessage' ,(coords) => {
+        io.emit('newLocationMessage',generateLocationmessage('Prasoon:',  coords.latitude,coords.longitude))      
+    });
+
     socket.on( 'disconnect' ,() => {
         console.log('user was disconnected');
     });
@@ -52,6 +56,9 @@ io.on('connection', (socket) => {
 
         socket.broadcast.emit('userjoined', generatemessage(Admin.from, Admin.text));
         });
+
+        
+
 });
  
 server.listen(port, () => {
