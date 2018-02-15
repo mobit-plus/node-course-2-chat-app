@@ -19,26 +19,37 @@ var socket = io();
     }
 
         socket.on('connect',function () {
-            console.log('new user connected');
+            //console.log('new user connected');
+             
+            var param = jQuery.deparam(window.location.search);
 
-            // socket.emit('createEmail', {
-            //     to: 'amit@gmail.com',
-            //     text: 'hello'
-            // });
-
-            // socket.emit('createMessage', {
-            //     from: 'prasoon',
-            //     text: 'cool its working'
-            // });
+            socket.emit('join', param, function(error) {
+                if(error){
+                    alert(error);
+                    window.location.href = '/';
+                }else{
+                    console.log('no error');
+                }
+            });
         });
 
         socket.on('disconnect', function () {
             console.log('Disconnected server');
         });
-         
-        socket.on('newEmail', function (email) {
-            console.log('new email', email);
+
+        socket.on('updateUserList', function (users) {
+            console.log('users list', users);
+            var ol = jQuery('<ol></ol>');
+            
+            users.forEach( function (user) {
+                ol.append(jQuery('<li></li>').text(user));
+            });
+            jQuery('#users').html(ol);
         });
+         
+        // socket.on('newEmail', function (email) {
+        //     console.log('new email', email);
+        // });
 
         socket.on('newMessage', function (message) {
             var formattedTime = moment(message.createdAt).format('MMM Do YYYY h:mm a');
@@ -99,18 +110,21 @@ var socket = io();
         jQuery('#message-form').on('submit', function (e) {
             e.preventDefault();
 
+            
+            var param = jQuery.deparam(window.location.search);
             var messageText = jQuery('[name="message"]');
-
+            //console.log(messageText);
             socket.emit('createMessage',{
-                from: 'Prasoon',
+                from: param.name,
                 text: messageText.val()
             }, function () {
                 messageText.val();
             });
         });
         var locationButton = jQuery('#send-location');
+        
 
-        locationButton.on('click', function () {
+        locationButton.on('click' ,function () {
             
             if (!navigator.geolocation) {
                 return alert('Geoloction not supported by your browser.');
@@ -120,8 +134,10 @@ var socket = io();
             navigator.geolocation.getCurrentPosition( function (position) {
                 
                 locationButton.removeAttr('disabled').text('Send location');
-                //console.log(position);
-                socket.emit('createLocationmessage', {
+               
+                //console.log(param);
+                var param = jQuery.deparam(window.location.search);
+                socket.emit('createLocationmessage', param ,{
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
