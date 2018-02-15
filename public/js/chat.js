@@ -111,11 +111,11 @@ var socket = io();
             e.preventDefault();
 
             
-            var param = jQuery.deparam(window.location.search);
+            //var param = jQuery.deparam(window.location.search);
             var messageText = jQuery('[name="message"]');
             //console.log(messageText);
             socket.emit('createMessage',{
-                from: param.name,
+                //from: param.name,
                 text: messageText.val()
             }, function () {
                 messageText.val();
@@ -136,8 +136,8 @@ var socket = io();
                 locationButton.removeAttr('disabled').text('Send location');
                
                 //console.log(param);
-                var param = jQuery.deparam(window.location.search);
-                socket.emit('createLocationmessage', param ,{
+                //var param = jQuery.deparam(window.location.search);
+                socket.emit('createLocationmessage' ,{
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });

@@ -35,15 +35,22 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createMessage', (message,callback) => {
-        console.log('new message', message);
-        io.emit('newMessage',generatemessage(message.from, message.text));
+        // console.log('new message', message);
+        var user = users.getUser(socket.id);
+        if(user && isRealString(message.text)) {
+            io.to(user.room).emit('newMessage',generatemessage(user.name, message.text));
+        }
         
-        //socket.broadcast.emit('newMessage', generatemessage(message.from, message.text));
         callback();
     });
 
-    socket.on('createLocationmessage' ,(param,coords) => {
-        io.emit('newLocationMessage',generateLocationmessage(param.name,  coords.latitude,coords.longitude))      
+    socket.on('createLocationmessage' ,(coords) => {
+        var user = users.getUser(socket.id);
+        
+        if(user) {
+            io.to(user.room).emit('newLocationMessage',generateLocationmessage(user.name,  coords.latitude,coords.longitude))
+        }
+              
     });
 
     socket.on( 'disconnect' ,() => {
